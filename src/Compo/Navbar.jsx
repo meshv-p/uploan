@@ -155,7 +155,7 @@ export function Navbar() {
                     {/* Sidebar component, swap this element with another sidebar if you like */}
                     <div className="flex flex-col flex-grow border-r border-gray-200 pt-5 bg-white overflow-y-auto">
                         <div className="flex items-center flex-shrink-0 px-4">
-                            Upload Lion
+                            Uploan
                             {/* <img
                                 className="h-8 w-auto"
                                 src="https://tailwindui.com/img/logos/workflow-logo-indigo-600-mark-gray-800-text.svg"
