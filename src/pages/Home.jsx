@@ -16,7 +16,7 @@ import {
 
 } from '@heroicons/react/outline'
 import { AddFileButton } from '../Compo/AddFileButton'
-import DragSelect from 'dragselect'
+// import DragSelect from 'dragselect'
 import { useItems } from '../Context/ItemsProvider'
 import { doc, deleteDoc } from "firebase/firestore";
 import { db, storage } from '../firebase/firebase'
