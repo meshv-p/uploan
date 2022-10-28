@@ -1,11 +1,18 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import { CheckCircleIcon, ChevronDownIcon, ExclamationCircleIcon, XCircleIcon } from '@heroicons/react/outline'
 import { FolderIcon, XIcon } from '@heroicons/react/solid'
 
-export default function Toaster({ show, fileList, setShow }) {
-    // const [show, setShow] = useState(true)
+export default function Toaster({ show, fileList, setShow, handlePause, handleResume }) {
+    const [start, setStart] = useState(true)
+
+    useEffect(() => {
+
+        console.log(handlePause)
+    }, [])
+
+
 
     return (
         <>
@@ -50,8 +57,8 @@ export default function Toaster({ show, fileList, setShow }) {
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
                                                                     <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-                                                                    <div class="w-full bg-gray-200 h-1 flex my-1">
-                                                                        <div class={`bg-${file.error ? 'red' : 'blue'}-600 h-1`} style={{ width: `${file.progress}%` }}></div>
+                                                                    <div className="w-full bg-gray-200 h-1 flex my-1">
+                                                                        <div className={`bg-${file.error ? 'red' : 'blue'}-600 h-1`} style={{ width: `${file.progress}%` }}></div>
                                                                         {/* <p className="text-sm text-gray-500 ">10%</p> */}
 
                                                                     </div>
@@ -59,6 +66,19 @@ export default function Toaster({ show, fileList, setShow }) {
 
                                                                 <div>
                                                                     <button
+                                                                        onClick={() => {
+                                                                            console.log(start)
+                                                                            if (start) {
+                                                                                console.log('pau')
+                                                                                handlePause()
+                                                                            }
+                                                                            else {
+                                                                                console.log('resume')
+                                                                                handleResume()
+                                                                            }
+                                                                            setStart(!start)
+                                                                        }}
+
                                                                         type="button"
                                                                         className="bg-white rounded-full p-1  hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500"
                                                                     >
@@ -95,8 +115,8 @@ export default function Toaster({ show, fileList, setShow }) {
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-medium text-gray-900 truncate">File Name</p>
-                                                            <div class="w-full bg-gray-200 h-1 flex my-1">
-                                                                <div class="bg-blue-600 h-1" style={{ width: " 10%" }}></div>
+                                                            <div className="w-full bg-gray-200 h-1 flex my-1">
+                                                                <div className="bg-blue-600 h-1" style={{ width: " 10%" }}></div>
                                                                 {/* <p className="text-sm text-gray-500 ">10%</p> 
 
                                                             </div>

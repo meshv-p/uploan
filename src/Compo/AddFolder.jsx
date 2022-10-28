@@ -7,7 +7,7 @@ import { ROOT_FOLDER, useFolder } from '../hooks/useFolder'
 
 export default function AddFolder({ currentFolder }) {
     const [open, setOpen] = useState(false)
-    const [folderName, setFolderName] = useState('')
+    const [folderName, setFolderName] = useState('Untitled folder')
     let uid = useId();
     // let f = useFolder()
 
@@ -105,7 +105,7 @@ export default function AddFolder({ currentFolder }) {
                                                         id="folder"
                                                         // auto select the input field
                                                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                                        defaultValue='Untitled folder'
+                                                        defaultValue={folderName}
                                                         onChange={(e) => setFolderName(e.target.value)}
                                                     />
                                                 </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Folders } from '../Compo/Folders'
 import { Files } from '../Compo/Files'
 import AddFolder from '../Compo/AddFolder'
@@ -10,22 +10,79 @@ import {
 
     InformationCircleIcon,
 
+    TrashIcon,
+
     ViewListIcon,
 
 } from '@heroicons/react/outline'
 import { AddFileButton } from '../Compo/AddFileButton'
+import DragSelect from 'dragselect'
+import { useItems } from '../Context/ItemsProvider'
+import { doc, deleteDoc } from "firebase/firestore";
+import { db, storage } from '../firebase/firebase'
+import { deleteObject, ref } from 'firebase/storage'
 
 export const Home = () => {
     let { folderId } = useParams()
     let { state } = useLocation()
-    console.log(state)
+    // console.log(state)
     let { folder, childFolders, childFiles } = useFolder(folderId, state?.folder);
-    try {
+    const [selectedFolder, setSelectedFolder] = useState([])
 
-        console.log(folder)
-    } catch (error) {
-        console.log(error);
+    let { setItems, items } = useItems()
+
+    useEffect(() => {
+
+        //     console.log(document?.getElementsByClassName('folder'));
+        //     let ds = new DragSelect({
+        //         selectables: document.getElementsByClassName('folder'),
+        //     });
+        //     ds.subscribe('callback', ({ items, event }) => {
+        //         console.log(items, event)
+        //     })
+        //     // returns all currently selected nodes:
+        //     console.log(ds.getSelection());
+        // }, [])
+        // useEffect(() => {
+        // //     console.log(selectedFolder)
+        // let ds = new DragSelect({
+        //     selectables: document.getElementsByClassName('item'),
+        //     draggability: false,
+        //     area: document.getElementById('items')
+        // });
+        // let i = []
+        // ds.subscribe('dragstart', ({ items, event, isDragging, isDraggingKeyboard }) => {
+        //     console.log(items, event, isDragging, isDraggingKeyboard)
+        //     setItems(items)
+
+
+        //     console.log(items);
+        // })
+        // returns all currently selected nodes:
+
+    }, [])
+
+    async function handleDelete() {
+        // check url in items
+        if (items[0].url) {
+            // delete file
+            console.log('delete file');
+            // delete file from firebase
+            await deleteDoc(doc(db, "files", items[0].id));
+            // delete file from storage
+            await deleteObject(ref(storage, items[0].url));
+            // delete file from items
+            setItems(items.filter(item => item.id !== items[0].id))
+
+            console.log('dele')
+        } else {
+
+            await deleteDoc(doc(db, "folders", items[0].id));
+
+            setItems(items.filter(item => item.id !== items[0].id))
+        }
     }
+
     return (
         <>
 
@@ -71,6 +128,32 @@ export const Home = () => {
                                     </li> */}
                                 </ol>
                                 <div className="option ml-4 flex-shrink-0 flex items-start space-x-4">
+                                    {
+                                        items?.length > 0 &&
+                                        (<>
+                                            <div className="ml-4 flex items-center md:ml-6">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        console.log(items)
+                                                        handleDelete()
+                                                    }
+
+                                                    }
+                                                    className="bg-white rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                >
+                                                    <TrashIcon className="h-6 w-6" aria-hidden="true" />
+                                                    <span className="sr-only">Delete</span>
+                                                </button>
+                                            </div>
+                                            <hr
+                                                className="h-6 w-px bg-gray-200 flex-shrink-0"
+                                            />
+                                        </>
+
+                                        )
+                                    }
+
                                     <div className="ml-4 flex items-center md:ml-6">
                                         <button
                                             type="button"
@@ -107,9 +190,9 @@ export const Home = () => {
         {/* /End replace *
     </div> */}
                     </div>
-                </main>
-            </div>
-            <div className=' md:pl-64 flex flex-col flex-1 pl-2'>
+                </main >
+            </div >
+            <div className=' md:pl-64 flex flex-col flex-1 pl-2' id='items'>
                 <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
 
                     <div className="flex-1 min-w-0">

@@ -1,13 +1,39 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FolderIcon } from "@heroicons/react/solid"
+import { useItems } from '../Context/ItemsProvider'
 
 export const File = ({ file }) => {
+    const [active, setActive] = useState(false)
+    let { setItems } = useItems()
+
     return (
-        <li key={file.name} className="p-1 relative rounded border hover:border-indigo-400  focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-            <a href={file.url} target="_blank" rel="noopener noreferrer">
+        <li key={file.name} className={`item p-1 ${active ? 'border-indigo-500  border-2' : ''} relative rounded border hover:border-indigo-400  group-aria-selected:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500`}>
+            {/* <a href={file.url} target="_blank" rel="noopener noreferrer"> */}
+            <div onClick={() => {
+                //select file and show selected border
+                if (active) {
+                    setItems(prev => prev.filter(item => item.name !== file.name))
+                    setActive(false)
+                }
+                else {
+                    setItems(prev => [...prev, file])
+                    setActive(true)
+                }
+
+            }}
+                onDoubleClick={() => {
+                    //open file  in new tab
+                    window.open(file.url, "_blank")
+
+
+
+                    console.log('double clicked');
+
+                }}
+            >
 
                 <div className="group  block w-44 h-44 aspect-w-10 aspect-h-7 rounded-lg  overflow-hidden">
-                    <img src={file.url} alt="Loading.." className="object-cover pointer-events-none group-hover:opacity-75" />
+                    <img src={file.url} alt="Loading.." loading='lazy' className=" object-cover pointer-events-none group-hover:opacity-75" />
                     <button type="button" className="absolute inset-0 focus:outline-none">
                         <span className="sr-only">View details for {file.title}</span>
                     </button>
@@ -23,7 +49,7 @@ export const File = ({ file }) => {
                         <div className="flex-1 min-w-0">
                             <div className="focus:outline-none">
                                 <span className="absolute inset-0" aria-hidden="true" />
-                                <p className=" block text-sm font-medium text-gray-900 truncate pointer-events-none">{file.name}</p>
+                                <p className=" block text-sm font-medium text-gray-900 w-24  truncate pointer-events-none">{file.name}</p>
                                 <p className="block text-sm font-medium text-gray-500 pointer-events-none">{file.size}</p>
                             </div>
                         </div>
@@ -32,8 +58,8 @@ export const File = ({ file }) => {
 
 
                 </div>
-            </a>
+            </div>
 
-        </li>
+        </li >
     )
 }

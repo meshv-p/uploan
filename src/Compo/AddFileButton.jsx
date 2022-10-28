@@ -1,19 +1,29 @@
 import { addDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from 'firebase/storage';
-import React, { useState } from 'react'
+import { getDownloadURL, ref, uploadBytes, uploadBytesResumable, } from 'firebase/storage';
+import React, { useEffect, useState } from 'react'
 import { database, storage } from '../firebase/firebase';
 import { ROOT_FOLDER } from '../hooks/useFolder';
 import Toaster from './Toaster';
 
 export const AddFileButton = ({ currentFolder }) => {
-    const [uploadingFiles, setUploadingFiles] = useState([])
-    const [show, setShow] = useState(false)
+    const [uploadingFiles, setUploadingFiles] = useState([
+        // {
+        //     id: 1,
+        //     name: 'file1',
+        //     progress: 20,
+        //     error: false
+        // }
+    ])
+    const [show, setShow] = useState(true)
+    const [uploadTask, setUploadTask] = useState()
+    let uploadTaskRef = React.useRef()
+    // let uploadTask;
 
 
-    function handlUpload(e) {
+    async function handlUpload(e) {
         setShow(true)
         const file = e.target.files[0];
-        console.log(file);
+        // console.log(file);
 
         if (currentFolder == null || file == null) return;
         let id = Math.floor(Math.random() * 10000)
@@ -37,14 +47,19 @@ export const AddFileButton = ({ currentFolder }) => {
 
         const uploadFile = ref(storage, `/files/${filePath}`);
 
-        let uploadTask = uploadBytesResumable(uploadFile, file);
+        let uT = uploadBytesResumable(uploadFile, file);
+        uploadTaskRef.current = uT
+        setUploadTask(uT)
+        // await setUploadTask(await uploadBytesResumable(uploadFile, file))
+        console.log(uploadTaskRef)
 
 
-        uploadTask.on('state_changed', (snapshot) => {
+
+        uT.on('state_changed', (snapshot) => {
             // Observe state change events such as progress, pause, and resume
             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
             const progress = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            console.log('Upload is ' + progress + '% done');
+            // console.log('Upload is ' + progress + '% done');
             setUploadingFiles(prevUploadingFiles => {
                 return prevUploadingFiles.map(uploadFile => {
                     if (uploadFile.id === id) {
@@ -64,14 +79,15 @@ export const AddFileButton = ({ currentFolder }) => {
         }
             , (error) => {
                 // Handle unsuccessful uploads
-                setUploadingFiles(prevUploadingFiles => {
-                    return prevUploadingFiles.map(uploadFile => {
-                        if (uploadFile.id === id) {
-                            return { ...uploadFile, error: true, progress: 100 }
-                        }
-                        return uploadFile
-                    })
-                })
+                console.log(error, error.serverResponse)
+                // setUploadingFiles(prevUploadingFiles => {
+                //     return prevUploadingFiles.map(uploadFile => {
+                //         if (uploadFile.id === id) {
+                //             return { ...uploadFile, error: false, progress: 100 }
+                //         }
+                //         return uploadFile
+                //     })
+                // })
             }
             , () => {
 
@@ -79,7 +95,7 @@ export const AddFileButton = ({ currentFolder }) => {
 
                 // Handle successful uploads on complete
                 // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                getDownloadURL(uT.snapshot.ref).then((downloadURL) => {
                     console.log('File available at', downloadURL);
                     addDoc(database.files,
                         {
@@ -100,7 +116,34 @@ export const AddFileButton = ({ currentFolder }) => {
         );
 
 
+        // setTimeout(() => {
+
+        //     console.log('upload pause');
+        //     uploadTask.pause();
+
+        // }, 2000);
+
     }
+
+    // useEffect(() => {
+    //     console.log(uploadTask, 'uload task')
+    //     setTimeout(() => {
+    //         uploadTask && console.log('pausing/ res')
+    //         uploadTask && uploadTask.pause()
+    //     }, 2000);
+    //     // console.log(handlePause);
+    // }, [uploadTask])
+
+
+    // function handlePause() {
+    //     console.log(uploadTask)
+    //     uploadTask.pause()
+    // }
+
+    // function handleResume() {
+    //     uploadTask.resume()
+    // }
+
 
     return (
         <>
@@ -124,20 +167,21 @@ export const AddFileButton = ({ currentFolder }) => {
                 />
             </label>
             {
-                // uploadingFiles.length > 0 &&
-                true && <Toaster fileList={uploadingFiles} show={show} setShow={setShow} />
-                // <div className="bg-white rounded-lg shadow-lg p-4">
-                //     <h1 className="text-gray-500 text-lg font-medium">Uploading files</h1>
-                //     <div className="flex items-center space-x-4 mt-4">
-                //         {uploadingFiles.map(file => (
-                //             <div key={file.id} className="flex flex-col items-center">
+                uploadingFiles.length > 0 &&
+                <Toaster fileList={uploadingFiles} show={show} setShow={setShow} handlePause={() => {
+                    console.log(uploadTaskRef, 'pause')
+                    try {
+                        uploadTaskRef.current.pause()
+                        // uploadTask.pause()
+                    } catch (error) {
+                        console.log(error, 'is');
+                    }
+                }} handleResume={() => {
 
-                //                 <p className="text-sm text-gray-500">{file.name}</p>
-                //                 <p className="text-sm text-gray-500">{file.progress}%</p>
-                //             </div>
-                //         ))}
-                //     </div>
-                // </div>
+                    console.log('resume', uploadTaskRef)
+                    uploadTaskRef.current.resume()
+                }} />
+
 
 
 
