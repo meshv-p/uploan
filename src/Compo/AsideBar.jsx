@@ -77,25 +77,9 @@ export default function AsideBar() {
     // const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     let { itemInfo, items, item, sideBarShow, setSideBarShow } = useItems()
-    currentFile = itemInfo
+    // currentFile = itemInfo
 
-    useEffect(() => {
-        if (currentFile) {
-            console.log(currentFile)
 
-            currentFile['information'] = {
-
-                'Uploaded by': 'Marie Culver',
-                Created: 'June 8, 2020',
-                'Last modified': 'June 8, 2020',
-                Dimensions: '4032 x 3024',
-                Resolution: '72 x 72',
-
-            }
-            console.log(currentFile)
-        }
-
-    }, [currentFile])
 
 
     return (
@@ -126,15 +110,15 @@ export default function AsideBar() {
                             <div className="pb-16 space-y-6">
                                 <div>
                                     <div className="block w-full aspect-w-5 aspect-h-5 rounded-lg overflow-hidden">
-                                        <img src={currentFile?.source || item?.url} alt="" className="object-cover w-96 h-72" />
+                                        <img src={item?.source || item?.url} alt="" className="object-cover w-96 h-72" />
                                     </div>
                                     <div className="mt-4 flex items-start justify-between">
                                         <div>
                                             <h2 className="text-lg font-medium text-gray-900">
                                                 <span className="sr-only">Details for </span>
-                                                {currentFile.name}
+                                                {item.name}
                                             </h2>
-                                            <p className="text-sm font-medium text-gray-500">{currentFile.size}</p>
+                                            <p className="text-sm font-medium text-gray-500">{item.size}</p>
                                         </div>
                                         <button
                                             type="button"
@@ -156,15 +140,15 @@ export default function AsideBar() {
                                         ))} */}
                                         <div className="py-3 flex justify-between text-sm font-medium">
                                             <dt className="text-gray-500">Type</dt>
-                                            <dd className="text-gray-900">{currentFile.contentType}</dd>
+                                            <dd className="text-gray-900">{item.contentType}</dd>
                                         </div>
                                         <div className="py-3 flex justify-between text-sm font-medium">
                                             <dt className="text-gray-500">Created</dt>
-                                            <dd className="text-gray-900">{currentFile.timeCreated}</dd>
+                                            <dd className="text-gray-900">{item.timeCreated}</dd>
                                         </div>
                                         <div className="py-3 flex justify-between text-sm font-medium">
                                             <dt className="text-gray-500">Last modified</dt>
-                                            <dd className="text-gray-900">{currentFile.updated}</dd>
+                                            <dd className="text-gray-900">{item.updated}</dd>
                                         </div>
                                     </dl>
                                 </div>
@@ -172,7 +156,7 @@ export default function AsideBar() {
                                 <div>
                                     <h3 className="font-medium text-gray-900">Shared with</h3>
                                     <ul role="list" className="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-                                        {currentFile?.sharedWith?.map((person) => (
+                                        {item?.sharedWith?.map((person) => (
                                             <li key={person.id} className="py-3 flex justify-between items-center">
                                                 <div className="flex items-center">
                                                     <img src={person.imageUrl} alt="" className="w-8 h-8 rounded-full" />
