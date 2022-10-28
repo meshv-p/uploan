@@ -187,11 +187,15 @@ export default function AsideBar() {
                                 </div>
                                 <div className="flex">
                                     {/* <button
-                                            type="button"
-                                            className="flex-1 bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        type="button"
+                                        className="flex-1 bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        onClick={() => {
+                                            window.open(item.url);
+                                        }}
 
-                                        > */}
-                                    <a href='https://firebasestorage.googleapis.com/v0/b/blog-4c391.appspot.com/o/files%2FIMG_20211018_141451_898.jpg?alt=media&token=84c26d64-0b68-41b1-88d4-8f62f7268753' download='https://firebasestorage.googleapis.com/v0/b/blog-4c391.appspot.com/o/files%2FIMG_20211018_141451_898.jpg?alt=media&token=84c26d64-0b68-41b1-88d4-8f62f7268753'>
+                                    > */}
+                                    {/* Download */}
+                                    <a href={item.url} download>
                                         Download
                                     </a>
                                     {/* </button> */}
