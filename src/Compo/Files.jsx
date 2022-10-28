@@ -26,12 +26,12 @@ const files = [
   // More files...
 ]
 
-export function Files({ childFiles }) {
+export function Files({ childFiles, folder }) {
   return (
     <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8 ">
       {childFiles && childFiles.map((file) => (
 
-        <File file={file} key={file.id} />
+        <File file={file} key={file.id} folder={folder} />
       ))}
     </ul>
   )

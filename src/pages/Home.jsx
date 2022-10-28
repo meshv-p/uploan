@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Folders } from '../Compo/Folders'
 import { Files } from '../Compo/Files'
 import AddFolder from '../Compo/AddFolder'
-import { useFolder } from '../hooks/useFolder'
+import { ROOT_FOLDER, useFolder } from '../hooks/useFolder'
 import { useLocation, useParams } from 'react-router-dom'
 import { Breadcrumbs } from '../Compo/Breadcrumbs'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
@@ -21,6 +21,7 @@ import { useItems } from '../Context/ItemsProvider'
 import { doc, deleteDoc } from "firebase/firestore";
 import { db, storage } from '../firebase/firebase'
 import { deleteObject, ref } from 'firebase/storage'
+import AsideBar from '../Compo/AsideBar'
 
 export const Home = () => {
     let { folderId } = useParams()
@@ -29,7 +30,7 @@ export const Home = () => {
     let { folder, childFolders, childFiles } = useFolder(folderId, state?.folder);
     const [selectedFolder, setSelectedFolder] = useState([])
 
-    let { setItems, items } = useItems()
+    let { setItems, items, item, getInformation, setSideBarShow, sideBarShow } = useItems()
 
     useEffect(() => {
 
@@ -166,6 +167,19 @@ export const Home = () => {
                                     <div className="ml-4 flex items-center md:ml-6">
                                         <button
                                             type="button"
+                                            onClick={() => {
+                                                setSideBarShow(!sideBarShow)
+                                                //first make ref to folder
+
+                                                // const filePath =
+                                                //     folder === ROOT_FOLDER
+                                                //         ? `${folder.path.join("/")}/${item.name}`
+                                                //         : `${folder.path.join("/")}/${folder.name}/${item.name}`
+                                                // console.log(filePath)
+                                                // const folderRef = ref(storage, `files/${filePath}`)
+                                                // console.log(folderRef)
+                                                // getInformation(item)
+                                            }}
                                             className="bg-white rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         >
                                             <InformationCircleIcon className="h-6 w-6" aria-hidden="true" />
@@ -192,63 +206,69 @@ export const Home = () => {
                     </div>
                 </main >
             </div >
-            <div className=' md:pl-64 flex flex-col flex-1 pl-2' id='items'>
-                <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
+            <div className='flex flex-row ' id='items'>
+                <div className="md:pl-64 flex flex-col flex-1 pl-2">
 
-                    <div className="flex-1 min-w-0">
-                        <h2 className="text-xl mb-2 font-bold leading-6 text-gray-900 sm:text-2xl sm:truncate">Folders</h2>
-                        <hr />
-                    </div>
-                    <div className="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
-                        {/* <button
+                    <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
+
+                        <div className="flex-1 min-w-0">
+                            <h2 className="text-xl mb-2 font-bold leading-6 text-gray-900 sm:text-2xl sm:truncate">Folders</h2>
+                            <hr />
+                        </div>
+                        <div className="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
+                            {/* <button
                         type="button"
                         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                         Make new folder
                     </button> */}
-                        <AddFolder currentFolder={folder} />
-                        {/* <Modal /> */}
-                        {/* <button
+                            <AddFolder currentFolder={folder} />
+                            {/* <Modal /> */}
+                            {/* <button
                         type="button"
                         className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                         Publish
                     </button> */}
+                        </div>
                     </div>
-                </div>
 
-                {/* TODO: Folders go heres */}
-                <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
-                    <Folders folders={childFolders} />
-                </div>
-
-
-                <div className=" px-6 mt-7 md:flex md:items-center md:justify-between">
-                    <div className="flex-1 min-w-0">
-                        <h2 className="text-xl mb-2 font-bold leading-7 text-gray-900 sm:text-2xl sm:truncate">Files</h2>
-                        <hr />
+                    {/* TODO: Folders go heres */}
+                    <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
+                        <Folders folders={childFolders} />
                     </div>
-                    <div className="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
-                        <AddFileButton currentFolder={folder} />
-                        {/* <button
+
+
+                    <div className=" px-6 mt-7 md:flex md:items-center md:justify-between">
+                        <div className="flex-1 min-w-0">
+                            <h2 className="text-xl mb-2 font-bold leading-7 text-gray-900 sm:text-2xl sm:truncate">Files</h2>
+                            <hr />
+                        </div>
+                        <div className="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
+                            <AddFileButton currentFolder={folder} />
+                            {/* <button
                             type="button"
                             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                             Upload new file
                         </button> */}
-                        {/* <button
+                            {/* <button
                         type="button"
                         className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                         Publish
                     </button> */}
+                        </div>
                     </div>
-                </div>
 
-                {/* TODO: Folders go heres */}
-                <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
-                    <Files childFiles={childFiles} />
+                    {/* TODO: Folders go heres */}
+                    <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
+                        <Files childFiles={childFiles} folder={folder} />
+                    </div>
+
                 </div>
+                <AsideBar />
+
             </div>
 
         </>

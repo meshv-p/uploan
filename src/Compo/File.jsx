@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { FolderIcon } from "@heroicons/react/solid"
 import { useItems } from '../Context/ItemsProvider'
+import { ROOT_FOLDER } from '../hooks/useFolder'
 
-export const File = ({ file }) => {
+export const File = ({ file, folder }) => {
     const [active, setActive] = useState(false)
-    let { setItems } = useItems()
+    let { setItems, setItem } = useItems()
 
     return (
         <li key={file.name} className={`item p-1 ${active ? 'border-indigo-500  border-2' : ''} relative rounded border hover:border-indigo-400  group-aria-selected:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500`}>
@@ -12,11 +13,25 @@ export const File = ({ file }) => {
             <div onClick={() => {
                 //select file and show selected border
                 if (active) {
-                    setItems(prev => prev.filter(item => item.name !== file.name))
+                    setItem(null)
+                    // setItems(prev => prev.filter(item => item.name !== file.name))
                     setActive(false)
                 }
                 else {
-                    setItems(prev => [...prev, file])
+                    //add file reference to items array
+                    const filePath =
+                        folder === ROOT_FOLDER
+                            ? `${folder.path.join("/")}/${file.name}`
+                            : `${folder.path.join("/")}/${folder.name}/${file.name}`
+                    console.log(filePath)
+
+                    // setItems(prev => [...prev,
+                    // {
+                    //     ...file,
+                    //     ref: filePath
+                    // }
+                    // ])
+                    setItem(pre => ({ ...file, ref: filePath }))
                     setActive(true)
                 }
 
