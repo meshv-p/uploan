@@ -15,51 +15,68 @@ export const AddFileButton = ({ currentFolder }) => {
         // }
     ])
     const [show, setShow] = useState(true)
-    const [uploadTask, setUploadTask] = useState()
-    let uploadTaskRef = React.useRef()
+    const [uploadTask, setUploadTask] = useState({})
+    // let uploadTaskRef = React.useRef()
     // let uploadTask;
 
+    useEffect(() => {
 
-    async function handlUpload(e) {
-        setShow(true)
-        const file = e.target.files[0];
-        // console.log(file);
+        console.log(uploadTask);
+        return () => {
+            // console.clear()
+        }
+    }, [uploadTask])
 
-        if (currentFolder == null || file == null) return;
-        let id = Math.floor(Math.random() * 10000)
-        setUploadingFiles(prevUploadingFiles => [
-            ...prevUploadingFiles,
-            {
-                id,
-                name: file.name,
-                progress: 0,
-                error: false
 
-            }
+    async function UploadFile(file, id, uT) {
+        console.log(currentFolder, currentFolder.path.join('/').name);
 
-        ])
-
+        // let uT = {}
 
         const filePath =
             currentFolder === ROOT_FOLDER
                 ? `${currentFolder.path.join("/")}/${file.name}`
-                : `${currentFolder.path.join("/")}/${currentFolder.name}/${file.name}`
+                : `${[...(currentFolder.path).map(p => p.name)].join("/")}/${currentFolder.name}/${file.name}`
+
+        console.log(filePath);
+        return
 
         const uploadFile = ref(storage, `/files/${filePath}`);
 
-        let uT = uploadBytesResumable(uploadFile, file);
-        uploadTaskRef.current = uT
+
+
+        // get the uploading file 
+
+
+        // set upload task to uploadingFiles by file id and update refresh the state
+
+        // setUploadingFiles(prevUploadingFiles => {
+        //     return prevUploadingFiles.map(uploadFile => {
+        //         if (uploadFile.id === id) {
+        //             return { ...uploadFile, uploadTask: uploadBytesResumable(uploadFile, file) }
+        //         }
+        //         return uploadFile
+        //     })
+        // })
+
+
+
+        uT[id] = uploadBytesResumable(uploadFile, file);
         setUploadTask(uT)
+        console.log(uploadTask)
+        // uploadTaskRef.current = uT
+        // setUploadTask(uT)
         // await setUploadTask(await uploadBytesResumable(uploadFile, file))
-        console.log(uploadTaskRef)
+        // console.log(uploadTaskRef)
 
 
-
-        uT.on('state_changed', (snapshot) => {
+        // let uT = uploadTask[id]
+        console.log(uT);
+        uT[id].on('state_changed', (snapshot) => {
             // Observe state change events such as progress, pause, and resume
             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
             const progress = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            // console.log('Upload is ' + progress + '% done');
+            console.log('Upload is ' + progress + '% done', 'for ', file.name);
             setUploadingFiles(prevUploadingFiles => {
                 return prevUploadingFiles.map(uploadFile => {
                     if (uploadFile.id === id) {
@@ -95,7 +112,7 @@ export const AddFileButton = ({ currentFolder }) => {
 
                 // Handle successful uploads on complete
                 // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                getDownloadURL(uT.snapshot.ref).then((downloadURL) => {
+                getDownloadURL(uT[id].snapshot.ref).then((downloadURL) => {
                     console.log('File available at', downloadURL);
                     addDoc(database.files,
                         {
@@ -114,14 +131,38 @@ export const AddFileButton = ({ currentFolder }) => {
                 });
             }
         );
+    }
 
 
-        // setTimeout(() => {
+    async function handlUpload(e) {
+        let uT = {}
+        setShow(true)
+        // const file = e.target.files[0];
+        const files = e.target.files;
+        console.log(files);
 
-        //     console.log('upload pause');
-        //     uploadTask.pause();
 
-        // }, 2000);
+        for (let i = 0; i < files.length; i++) {
+            // generate random id for each file
+            let id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            console.log(files[i], 'info', id)
+            if (currentFolder == null || files[i] == null) return;
+            setUploadingFiles(prevUploadingFiles => [
+                ...prevUploadingFiles,
+                {
+                    id,
+                    name: files[i].name,
+                    progress: 0,
+                    error: false,
+
+                }
+
+            ])
+            UploadFile(files[i], id, uT)
+        }
+
+
+
 
     }
 
@@ -156,7 +197,7 @@ export const AddFileButton = ({ currentFolder }) => {
                     Upload new file
                 </div>
 
-                <input type="file" name="file" id="file" style={{
+                <input type="file" name="file" id="file" multiple style={{
                     opacity: 0,
                     position: 'absolute',
                     left: '-9999px'
@@ -168,19 +209,21 @@ export const AddFileButton = ({ currentFolder }) => {
             </label>
             {
                 uploadingFiles.length > 0 &&
-                <Toaster fileList={uploadingFiles} show={show} setShow={setShow} handlePause={() => {
-                    console.log(uploadTaskRef, 'pause')
-                    try {
-                        uploadTaskRef.current.pause()
-                        // uploadTask.pause()
-                    } catch (error) {
-                        console.log(error, 'is');
-                    }
-                }} handleResume={() => {
+                <Toaster fileList={uploadingFiles} show={show} setShow={setShow}
+                // handlePause={() => {
+                //     console.log(uploadTaskRef, 'pause')
+                //     try {
+                //         uploadTaskRef.current.pause()
+                //         // uploadTask.pause()
+                //     } catch (error) {
+                //         console.log(error, 'is');
+                //     }
+                // }} handleResume={() => {
 
-                    console.log('resume', uploadTaskRef)
-                    uploadTaskRef.current.resume()
-                }} />
+                //     console.log('resume', uploadTaskRef)
+                //     uploadTaskRef.current.resume()
+                // }}
+                />
 
 
 

@@ -106,7 +106,7 @@ export default function AsideBar() {
                 {/* Details sidebar */}
                 {
                     sideBarShow && (item ? (
-                        <aside className="hidden w-96 bg-white p-3 border-l border-gray-200 overflow-y-auto lg:block">
+                        <aside className=" w-96 bg-white p-3 border-l border-gray-200 overflow-y-auto lg:block">
                             <div className="pb-16 space-y-6">
                                 <div>
                                     <div className="block w-full aspect-w-5 aspect-h-5 rounded-lg overflow-hidden">
@@ -116,9 +116,9 @@ export default function AsideBar() {
                                         <div>
                                             <h2 className="text-lg font-medium text-gray-900">
                                                 <span className="sr-only">Details for </span>
-                                                {item.name}
+                                                {itemInfo?.name}
                                             </h2>
-                                            <p className="text-sm font-medium text-gray-500">{item.size}</p>
+                                            <p className="text-sm font-medium text-gray-500">{itemInfo?.size}</p>
                                         </div>
                                         <button
                                             type="button"
@@ -140,15 +140,15 @@ export default function AsideBar() {
                                         ))} */}
                                         <div className="py-3 flex justify-between text-sm font-medium">
                                             <dt className="text-gray-500">Type</dt>
-                                            <dd className="text-gray-900">{item.contentType}</dd>
+                                            <dd className="text-gray-900">{itemInfo?.contentType}</dd>
                                         </div>
                                         <div className="py-3 flex justify-between text-sm font-medium">
                                             <dt className="text-gray-500">Created</dt>
-                                            <dd className="text-gray-900">{item.timeCreated}</dd>
+                                            <dd className="text-gray-900">{itemInfo?.timeCreated}</dd>
                                         </div>
                                         <div className="py-3 flex justify-between text-sm font-medium">
                                             <dt className="text-gray-500">Last modified</dt>
-                                            <dd className="text-gray-900">{item.updated}</dd>
+                                            <dd className="text-gray-900">{itemInfo?.updated}</dd>
                                         </div>
                                     </dl>
                                 </div>
@@ -195,7 +195,9 @@ export default function AsideBar() {
 
                                     > */}
                                     {/* Download */}
-                                    <a href={item.url} download>
+                                    <a href={item.url} download
+                                        target="_blank"
+                                    >
                                         Download
                                     </a>
                                     {/* </button> */}

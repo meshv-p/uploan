@@ -1,41 +1,51 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FolderIcon } from "@heroicons/react/solid"
 import { useItems } from '../Context/ItemsProvider'
 import { ROOT_FOLDER } from '../hooks/useFolder'
-
+import { Blurhash, BlurhashCanvas } from "react-blurhash";
+import { encode } from "blurhash";
 export const File = ({ file, folder }) => {
     const [active, setActive] = useState(false)
     let { setItems, setItem } = useItems()
+    const [imgData, setImgData] = useState({
+        width: 0,
+        height: 0,
+
+    })
+
+
+
 
     return (
         <li key={file.name} className={`item p-1 ${active ? 'border-indigo-500  border-2' : ''} relative rounded border hover:border-indigo-400  group-aria-selected:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500`}>
             {/* <a href={file.url} target="_blank" rel="noopener noreferrer"> */}
-            <div onClick={() => {
-                //select file and show selected border
-                if (active) {
-                    setItem(null)
-                    // setItems(prev => prev.filter(item => item.name !== file.name))
-                    setActive(false)
-                }
-                else {
-                    //add file reference to items array
-                    const filePath =
-                        folder === ROOT_FOLDER
-                            ? `${folder.path.join("/")}/${file.name}`
-                            : `${folder.path.join("/")}/${folder.name}/${file.name}`
-                    console.log(filePath)
+            <div
+                onClick={() => {
+                    //select file and show selected border
+                    if (active) {
+                        setItem(null)
+                        // setItems(prev => prev.filter(item => item.name !== file.name))
+                        setActive(false)
+                    }
+                    else {
+                        //add file reference to items array
+                        const filePath =
+                            folder === ROOT_FOLDER
+                                ? `${folder.path.join("/")}/${file.name}`
+                                : `${[...(folder.path).map(p => p.name)].join("/")}/${folder.name}/${file.name}`
+                        console.log(filePath)
 
-                    // setItems(prev => [...prev,
-                    // {
-                    //     ...file,
-                    //     ref: filePath
-                    // }
-                    // ])
-                    setItem(pre => ({ ...file, ref: filePath }))
-                    setActive(true)
-                }
+                        // setItems(prev => [...prev,
+                        // {
+                        //     ...file,
+                        //     ref: filePath
+                        // }
+                        // ])
+                        setItem(pre => ({ ...file, ref: filePath }))
+                        setActive(true)
+                    }
 
-            }}
+                }}
                 onDoubleClick={() => {
                     //open file  in new tab
                     window.open(file.url, "_blank")
@@ -48,7 +58,10 @@ export const File = ({ file, folder }) => {
             >
 
                 <div className="group  block w-44 h-44 aspect-w-10 aspect-h-7 rounded-lg  overflow-hidden">
-                    <img src={file.url} alt="Loading.." loading='lazy' className=" object-cover pointer-events-none group-hover:opacity-75" />
+                    {/* <BlurhashCanvas hash="U5S?DVE1E1?v_39FE1WWxuofRjRP_Nt7ayM{" width={400} height={300} punch={1} /> */}
+
+
+                    <img src={file.url} alt="Loading.." loading='lazy' className=" object-cover pointer-events-none group-hover:opacity-75 " />
                     <button type="button" className="absolute inset-0 focus:outline-none">
                         <span className="sr-only">View details for {file.title}</span>
                     </button>

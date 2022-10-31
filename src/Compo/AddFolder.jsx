@@ -15,7 +15,11 @@ export default function AddFolder({ currentFolder }) {
 
     function handleAddFolder() {
         console.log('handleAddFolder')
+        if (folderName === '') {
 
+            setOpen(false)
+            return
+        }
 
         if (currentFolder == null) return
 
