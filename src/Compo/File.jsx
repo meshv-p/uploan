@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { FolderIcon } from "@heroicons/react/solid"
 import { useItems } from '../Context/ItemsProvider'
 import { ROOT_FOLDER } from '../hooks/useFolder'
-import { Blurhash, BlurhashCanvas } from "react-blurhash";
-import { encode } from "blurhash";
+// import { Blurhash, BlurhashCanvas } from "react-blurhash";
+// import { encode } from "blurhash";
 export const File = ({ file, folder }) => {
     const [active, setActive] = useState(false)
     let { setItems, setItem } = useItems()
