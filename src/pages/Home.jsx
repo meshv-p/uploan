@@ -30,7 +30,7 @@ export const Home = () => {
     let { folder, childFolders, childFiles } = useFolder(folderId, state?.folder);
     const [selectedFolder, setSelectedFolder] = useState([])
 
-    let { setItems, items, item, getInformation, setSideBarShow, sideBarShow } = useItems()
+    let { setItems, items, item, getInformation, setSideBarShow, sideBarShow, setItem } = useItems()
 
     useEffect(() => {
 
@@ -64,6 +64,16 @@ export const Home = () => {
     }, [])
 
     async function handleDelete() {
+
+        if (item) {
+            const storageRef = ref(storage, `files/${item.ref}`);
+            await deleteObject(storageRef)
+            const docRef = doc(db, "files", item.id);
+            await deleteDoc(docRef);
+            setItem(null)
+            return
+        }
+
         // check url in items
         if (items[0].url) {
             // delete file
@@ -130,7 +140,7 @@ export const Home = () => {
                                 </ol>
                                 <div className="option ml-4 flex-shrink-0 flex items-start space-x-4">
                                     {
-                                        items?.length > 0 &&
+                                        (item || items?.length > 0) &&
                                         (<>
                                             <div className="ml-4 flex items-center md:ml-6">
                                                 <button

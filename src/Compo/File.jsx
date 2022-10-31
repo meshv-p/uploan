@@ -20,6 +20,7 @@ export const File = ({ file, folder }) => {
         <li key={file.name} className={`item p-1 ${active ? 'border-indigo-500  border-2' : ''} relative rounded border hover:border-indigo-400  group-aria-selected:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500`}>
             {/* <a href={file.url} target="_blank" rel="noopener noreferrer"> */}
             <div
+
                 onClick={() => {
                     //select file and show selected border
                     if (active) {
