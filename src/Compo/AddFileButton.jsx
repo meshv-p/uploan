@@ -39,7 +39,7 @@ export const AddFileButton = ({ currentFolder }) => {
                 : `${[...(currentFolder.path).map(p => p.name)].join("/")}/${currentFolder.name}/${file.name}`
 
         console.log(filePath);
-        return
+        // return
 
         const uploadFile = ref(storage, `/files/${filePath}`);
 
