@@ -10,6 +10,8 @@ import {
 
     InformationCircleIcon,
 
+    ShareIcon,
+
     TrashIcon,
 
     ViewListIcon,
@@ -22,18 +24,21 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { db, storage } from '../firebase/firebase'
 import { deleteObject, ref } from 'firebase/storage'
 import AsideBar from '../Compo/AsideBar'
+import { Skeleton } from '@mui/material'
+import Modal from '../Compo/Modal'
 
 export const Home = () => {
     let { folderId } = useParams()
     let { state } = useLocation()
     // console.log(state)
-    let { folder, childFolders, childFiles } = useFolder(folderId, state?.folder);
-    const [selectedFolder, setSelectedFolder] = useState([])
+    let f = useFolder(folderId, state)
+    let { folder, childFolders, childFiles, isFilesLoading, isFoldersLoading } = useFolder(folderId, state?.folder);
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     let { setItems, items, item, getInformation, setSideBarShow, sideBarShow, setItem } = useItems()
 
     useEffect(() => {
-
+        console.log(isFilesLoading, isFoldersLoading, f);
         //     console.log(document?.getElementsByClassName('folder'));
         //     let ds = new DragSelect({
         //         selectables: document.getElementsByClassName('folder'),
@@ -94,6 +99,24 @@ export const Home = () => {
         }
     }
 
+    function handleShare() {
+
+        if (item) {
+            console.log(item)
+            // setIsModalOpen(true)
+            navigator.share({
+                title: item.name,
+                text: 'Check out this file',
+                url: item.url,
+            })
+            // navigator.clipboard.writeText(`${item.url}`)
+            // return
+        }
+
+
+        console.log('share')
+    }
+
     return (
         <>
 
@@ -138,11 +161,66 @@ export const Home = () => {
                                         </div>
                                     </li> */}
                                 </ol>
+                                {
+                                    isModalOpen && <Modal
+                                        title={`Share '${item.name}'`}
+                                        open={isModalOpen}
+                                        setOpen={setIsModalOpen}
+                                    >
+                                        {/* Share links or copy link */}
+                                        <div className="flex flex-col items-center justify-center">
+
+                                            {/* For share */}
+
+                                            Share links or copy link
+
+                                            <div className="flex">
+                                                <div className="flex flex-row items-center justify-center">
+
+                                                    {/* For copy link button */}
+                                                    <button
+                                                        onClick={() => navigator.clipboard.writeText(`${item.url}`)}
+                                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                                                    >
+                                                        {/* TODO: on click text change to done */}
+                                                        Copy link
+                                                    </button>
+
+                                                    {/* For link share with navigation  button*/}
+                                                    <button
+                                                        onClick={() => handleShare()}
+                                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                                                    >
+                                                        Share
+                                                    </button>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </Modal>
+                                }
                                 <div className="option ml-4 flex-shrink-0 flex items-start space-x-4">
                                     {
                                         (item || items?.length > 0) &&
                                         (<>
-                                            <div className="ml-4 flex items-center md:ml-6">
+                                            <div className="ml-4 flex items-center md:ml-6 gap-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        console.log(items)
+                                                        // handleDelete()
+                                                        setIsModalOpen(true)
+                                                        // handleShare()
+                                                    }
+
+                                                    }
+                                                    className="bg-white rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                >
+                                                    <ShareIcon className="h-6 w-6" aria-hidden="true" />
+                                                    <span className="sr-only">Delete</span>
+                                                </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => {
@@ -156,6 +234,7 @@ export const Home = () => {
                                                     <TrashIcon className="h-6 w-6" aria-hidden="true" />
                                                     <span className="sr-only">Delete</span>
                                                 </button>
+
                                             </div>
                                             <hr
                                                 className="h-6 w-px bg-gray-200 flex-shrink-0"
@@ -202,17 +281,6 @@ export const Home = () => {
                         </div>
 
 
-
-                        {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-    </div> */}
-                        {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        {/* Replace with your content 
-        <div className="py-4">
-            <div className="border-4 border-dashed border-gray-200 rounded-lg h-96" />
-        </div>
-        {/* /End replace *
-    </div> */}
                     </div>
                 </main >
             </div >
@@ -245,7 +313,9 @@ export const Home = () => {
 
                     {/* TODO: Folders go heres */}
                     <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
-                        <Folders folders={childFolders} />
+                        {/* <Skeleton variant="rounded" width={210} height={60} /> */}
+
+                        <Folders folders={childFolders} isFoldersLoading={isFoldersLoading} />
                     </div>
 
 
@@ -273,7 +343,8 @@ export const Home = () => {
 
                     {/* TODO: Folders go heres */}
                     <div className=" px-6 mt-2 md:flex md:items-center md:justify-between">
-                        <Files childFiles={childFiles} folder={folder} />
+
+                        <Files childFiles={childFiles} folder={folder} isFilesLoading={isFilesLoading} />
                     </div>
 
                 </div>

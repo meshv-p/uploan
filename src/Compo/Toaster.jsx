@@ -69,12 +69,12 @@ export default function Toaster({ show, fileList, setShow, handlePause, handleRe
                                                                         onClick={() => {
                                                                             console.log(start)
                                                                             if (start) {
-                                                                                console.log('pau')
-                                                                                handlePause()
+                                                                                console.log('pause file')
+                                                                                handlePause(file.id)
                                                                             }
                                                                             else {
                                                                                 console.log('resume')
-                                                                                handleResume()
+                                                                                handleResume(file.id)
                                                                             }
                                                                             setStart(!start)
                                                                         }}

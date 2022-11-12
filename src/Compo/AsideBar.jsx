@@ -39,6 +39,7 @@ import {
     ViewListIcon,
 } from '@heroicons/react/solid'
 import { useItems } from '../Context/ItemsProvider'
+import getIconFile, { isImageFile } from '../utils/getIconFile'
 
 
 let currentFile = {
@@ -110,7 +111,22 @@ export default function AsideBar() {
                             <div className="pb-16 space-y-6">
                                 <div>
                                     <div className="block w-full aspect-w-5 aspect-h-5 rounded-lg overflow-hidden">
-                                        <img src={item?.source || item?.url} alt="" className="object-cover w-96 h-72" />
+                                        {
+                                            isImageFile(item.name) ?
+                                                <img src={item?.source || item?.url} alt="Loading.." loading='lazy' className=" object-cover pointer-events-none group-hover:opacity-75 " />
+                                                :
+
+                                                <div className="flex items-center justify-center h-full w-full">
+                                                    <div className="flex flex-col items-center justify-center py-3">
+                                                        <div className="flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100">
+                                                            {getIconFile(item.name)}
+                                                        </div>
+                                                        <p className="mt-2 text-sm font-medium text-gray-900">{item.name}</p>
+                                                    </div>
+                                                </div>
+                                        }
+
+                                        {/* <img src={item?.source || item?.url} alt="" className="object-cover w-96 h-72" /> */}
                                     </div>
                                     <div className="mt-4 flex items-start justify-between">
                                         <div>

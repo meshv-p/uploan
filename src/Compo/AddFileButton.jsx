@@ -91,6 +91,18 @@ export const AddFileButton = ({ currentFolder }) => {
                     break;
                 case 'running':
                     console.log('Upload is running');
+                
+                    break;
+                case 'success':
+                    console.log('Upload is success');
+                    break;
+                case 'error':
+                    console.log('Upload is error');
+                    break;
+                case 'canceled':
+                    console.log('Upload is canceled',);
+                    break;
+                default:
                     break;
             }
         }
@@ -176,14 +188,17 @@ export const AddFileButton = ({ currentFolder }) => {
     // }, [uploadTask])
 
 
-    // function handlePause() {
-    //     console.log(uploadTask)
-    //     uploadTask.pause()
-    // }
+    function handlePause(id) {
+        console.log(uploadTask)
+        // console.log(uploadTask[id])
+        uploadTask[id] && uploadTask[id].pause()
+    }
 
-    // function handleResume() {
-    //     uploadTask.resume()
-    // }
+    function handleResume(id) {
+        console.log(uploadTask)
+
+        uploadTask[id] && uploadTask[id].resume()
+    }
 
 
     return (
@@ -210,6 +225,8 @@ export const AddFileButton = ({ currentFolder }) => {
             {
                 uploadingFiles.length > 0 &&
                 <Toaster fileList={uploadingFiles} show={show} setShow={setShow}
+                    handlePause={handlePause}
+                    handleResume={handleResume}
                 // handlePause={() => {
                 //     console.log(uploadTaskRef, 'pause')
                 //     try {
